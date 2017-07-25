@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour {
 
-
 	// singleton
 	static InputManager instance = null;
 
@@ -17,6 +16,5 @@ public class InputManager : MonoBehaviour {
 		if (instance == null) { instance = this; }
 		else { Debug.LogError ("Only 1 instance of InputManager can exist per scene!"); }
 	}
-
 
 }
