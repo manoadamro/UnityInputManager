@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+public delegate void MouseTargetCallback (GameObject gameObject);
+
+
 public class MouseBehaviour : MonoBehaviour {
-
-
-	class MouseTarget {
-
-		public GameObject gameObject;
-	}
 
 	class InputEvent {
 		
@@ -41,11 +39,25 @@ public class MouseBehaviour : MonoBehaviour {
 	[SerializeField] float maxDistance;
 	[SerializeField] LayerMask targetMask;
 
-	MouseTarget currentTarget = null;
-	MouseTarget lastTarget = null;
+	GameObject currentTarget = null;
+	GameObject lastTarget = null;
 
 	InputEvent currentEvent = null;
 	InputEvent lastEvent = null;
+
+
+	// stores callbacks for when a new target is found
+	event MouseTargetCallback onTargetEnter;
+
+	// adds callbacks to onTargetEnter
+	public static event MouseTargetCallback OnTargetEnter { add { instance.onTargetEnter += value; } remove { instance.onTargetEnter -= value; } }
+
+
+	// stores callbacks for when a new target is found
+	event MouseTargetCallback onTargetLeave;
+
+	// adds callbacks to onTargetEnter
+	public static event MouseTargetCallback OnTargetLeave { add { instance.onTargetLeave += value; } remove { instance.onTargetLeave -= value; } }
 
 
 	/// <summary>
@@ -61,26 +73,45 @@ public class MouseBehaviour : MonoBehaviour {
 
 	void UpdateTarget(GameObject hit) {
 
-		if (hit == null) {
-
-			if (currentTarget != null) {
-				
-				// leave current target
-				// target is null
-			}
-
-			// else stays null
-		}
-		else {
+		if (hit != currentTarget) {
 			
-			if (hit != currentTarget.gameObject) {
+			if (hit == null) {
 
-				// leave current target
-				// set new target as current target
-				// enter current target
+				// from last to null
+				if (currentTarget != null) {
+
+					currentTarget.SendMessageUpwards ("OnMouseLeave");
+					if (onTargetLeave != null) { onTargetLeave (currentTarget); }
+
+					lastTarget = currentTarget;
+					currentTarget = null;
+					if (onTargetEnter != null) { onTargetEnter (null); }
+				}
 			}
+			else {
+				
+				if (hit != currentTarget) {
 
-			// else target stays the same
+					// enter from last
+					if (currentTarget != null) {
+						
+						currentTarget.SendMessageUpwards ("OnMouseLeave");
+						if (onTargetLeave != null) { onTargetLeave (currentTarget); }
+
+						lastTarget = currentTarget;
+						currentTarget.SendMessageUpwards ("OnMouseEnter");
+						if (onTargetEnter != null) { onTargetEnter (currentTarget); }
+					}
+
+					// enter from null
+					else {
+						
+						lastTarget = null;
+						currentTarget.SendMessageUpwards ("OnMouseEnter");
+						if (onTargetEnter != null) { onTargetEnter (currentTarget); }
+					}
+				}
+			}
 		}
 	}
 
@@ -94,14 +125,17 @@ public class MouseBehaviour : MonoBehaviour {
 			UpdateTarget (null);
 		}
 
+
+		// not 'if/else' because currentEvent might be set in above 'if'
 		if (currentEvent == null) {
 
 			// check for events
 		}
-		else {
-
+		if (currentEvent != null) {
+			
 			// check for event end
 		}
+
 	}
 }
 
