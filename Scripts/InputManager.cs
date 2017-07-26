@@ -105,6 +105,7 @@ public class InputManager : MonoBehaviour {
 		else { Debug.LogError ("Only 1 instance of MouseBehaviour can exist per scene!"); }
 	}
 		
+
 	/// <summary>
 	/// Updates the current target (if different).
 	/// </summary>
@@ -161,7 +162,7 @@ public class InputManager : MonoBehaviour {
 	/// <summary>
 	/// Checks for mouse event.
 	/// </summary>
-	void CheckForMouseEvent() {
+	bool CheckForMouseEvent() {
 		// check for mouse button events
 		for (int i = 0; i < 3; i++) {
 
@@ -191,8 +192,16 @@ public class InputManager : MonoBehaviour {
 		return false;
 	}
 
+
 	void CheckWatchKeys() {
 
+		// To Do
+	}
+
+
+	void CheckForEventEnd() {
+
+		// To Do
 	}
 
 	/// <summary>
@@ -231,6 +240,7 @@ public class InputManager : MonoBehaviour {
 		else {
 			
 			// check for event end
+			CheckForEventEnd();
 		}
 
 	}
