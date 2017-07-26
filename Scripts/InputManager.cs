@@ -5,7 +5,7 @@ using System.Collections;
 public delegate void MouseTargetCallback (GameObject gameObject);
 
 
-public class MouseBehaviour : MonoBehaviour {
+public class InputManager : MonoBehaviour {
 
 	class InputEvent {
 		
@@ -36,7 +36,7 @@ public class MouseBehaviour : MonoBehaviour {
 	/// <summary>
 	/// singleton
 	/// </summary>
-	static MouseBehaviour instance = null;
+	static InputManager instance = null;
 
 	/// <summary>
 	/// maximum mouse reach (in game units)
