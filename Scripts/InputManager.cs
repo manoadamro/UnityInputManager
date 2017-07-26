@@ -103,59 +103,79 @@ public class InputManager : MonoBehaviour {
 		else { Debug.LogError ("Only 1 instance of MouseBehaviour can exist per scene!"); }
 	}
 		
-
+	/// <summary>
+	/// Updates the current target (if different).
+	/// </summary>
+	/// <param name="hit">the game object hit from the most recent raycast</param>
 	void UpdateTarget(GameObject hit) {
 
+		// if the target has changed
 		if (hit != currentTarget) {
-			
+
+			// if no valid object was hit with raycast
 			if (hit == null) {
 
-				// from last to null
+				// leave current target
+				currentTarget.SendMessageUpwards ("OnMouseLeave");
+				if (onTargetLeave != null) { onTargetLeave (currentTarget); }
+
+				// set new target
+				lastTarget = currentTarget;
+
+				// enter new target
+				currentTarget = null;
+				if (onTargetEnter != null) { onTargetEnter (null); }
+			}
+
+			// if a valid object was hit with raycast
+			else {
+				
+				// enter from last
 				if (currentTarget != null) {
 
+					// leave current target
 					currentTarget.SendMessageUpwards ("OnMouseLeave");
 					if (onTargetLeave != null) { onTargetLeave (currentTarget); }
 
+					// set new target
 					lastTarget = currentTarget;
-					currentTarget = null;
-					if (onTargetEnter != null) { onTargetEnter (null); }
+
+					// enter new target
+					currentTarget.SendMessageUpwards ("OnMouseEnter");
+					if (onTargetEnter != null) { onTargetEnter (currentTarget); }
 				}
-			}
-			else {
-				
-				if (hit != currentTarget) {
 
-					// enter from last
-					if (currentTarget != null) {
-						
-						currentTarget.SendMessageUpwards ("OnMouseLeave");
-						if (onTargetLeave != null) { onTargetLeave (currentTarget); }
+				// enter from null
+				else {
 
-						lastTarget = currentTarget;
-						currentTarget.SendMessageUpwards ("OnMouseEnter");
-						if (onTargetEnter != null) { onTargetEnter (currentTarget); }
-					}
-
-					// enter from null
-					else {
-						
-						lastTarget = null;
-						currentTarget.SendMessageUpwards ("OnMouseEnter");
-						if (onTargetEnter != null) { onTargetEnter (currentTarget); }
-					}
+					lastTarget = null;
+					currentTarget.SendMessageUpwards ("OnMouseEnter");
+					if (onTargetEnter != null) { onTargetEnter (currentTarget); }
 				}
 			}
 		}
 	}
 
 
+	/// <summary>
+	/// Called by unity every frame
+	/// </summary>
 	void Update() {
 
+		// define a raycast hit
 		RaycastHit hit;
+
+		// see if the mouse if hovering over a valid object within max distance
 		if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit, maxDistance, targetMask)) { 
+
+			// update target with object
 			UpdateTarget (hit.collider.gameObject);
 		}
+
+		// no valid object found
 		else {
+
+			// update target with null
 			UpdateTarget (null);
 		}
 
