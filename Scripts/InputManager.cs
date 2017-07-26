@@ -7,6 +7,7 @@ public delegate void MouseTargetCallback (GameObject gameObject);
 
 public class InputManager : MonoBehaviour {
 
+
 	class InputEvent {
 		
 		public KeyCode key;
@@ -32,6 +33,7 @@ public class InputManager : MonoBehaviour {
 			this.drag = false;
 		}
 	}
+
 
 	/// <summary>
 	/// singleton
@@ -156,6 +158,42 @@ public class InputManager : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Checks for mouse event.
+	/// </summary>
+	void CheckForMouseEvent() {
+		// check for mouse button events
+		for (int i = 0; i < 3; i++) {
+
+			// see if mouse button has been clicked this frame
+			if (Input.GetMouseButtonDown (i)) {
+
+				// get the keycode from mouse button index
+				KeyCode code = (KeyCode)((int)KeyCode.Mouse0 + i);
+
+				// create an event
+				currentEvent = 
+					new InputEvent (
+						code,
+						Input.GetKeyDown (KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift),
+						Input.GetKeyDown (KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt),
+						Input.GetKeyDown (KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl),
+						lastEvent != null && lastEvent.key == code && Time.time - lastEvent.endTime < 0.2f
+					);
+
+				// last event is not needed now
+				lastEvent = null;
+
+				// no more looking!
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void CheckWatchKeys() {
+
+	}
 
 	/// <summary>
 	/// Called by unity every frame
@@ -178,14 +216,19 @@ public class InputManager : MonoBehaviour {
 			// update target with null
 			UpdateTarget (null);
 		}
-
-
-		// not 'if/else' because currentEvent might be set in above 'if'
+			
+		// if there is no current event
 		if (currentEvent == null) {
 
-			// check for events
+			// check for mouse events
+			if (CheckForMouseEvent ()) { return; }
+
+			// Check watch keys
+			CheckWatchKeys();
 		}
-		if (currentEvent != null) {
+
+		// if there is a current event
+		else {
 			
 			// check for event end
 		}
