@@ -33,30 +33,63 @@ public class MouseBehaviour : MonoBehaviour {
 		}
 	}
 
-	// singleton
+	/// <summary>
+	/// singleton
+	/// </summary>
 	static MouseBehaviour instance = null;
 
+	/// <summary>
+	/// maximum mouse reach (in game units)
+	/// </summary>
 	[SerializeField] float maxDistance;
+
+	/// <summary>
+	/// only objects using a layer in this mask will be detected
+	/// </summary>
 	[SerializeField] LayerMask targetMask;
 
+
+	/// <summary>
+	/// The current mouse target.
+	/// </summary>
 	GameObject currentTarget = null;
+
+	/// <summary>
+	/// The last mouse target.
+	/// </summary>
 	GameObject lastTarget = null;
 
+
+	/// <summary>
+	/// The current mouse event.
+	/// </summary>
 	InputEvent currentEvent = null;
+
+	/// <summary>
+	/// The last mouse event.
+	/// </summary>
 	InputEvent lastEvent = null;
 
 
-	// stores callbacks for when a new target is found
+	/// <summary>
+	/// stores callbacks for when a new target is found
+	/// </summary>
 	event MouseTargetCallback onTargetEnter;
 
-	// adds callbacks to onTargetEnter
+	/// <summary>
+	/// adds callbacks to onTargetEnter
+	/// </summary>
 	public static event MouseTargetCallback OnTargetEnter { add { instance.onTargetEnter += value; } remove { instance.onTargetEnter -= value; } }
 
 
-	// stores callbacks for when a new target is found
+	/// <summary>
+	/// stores callbacks for when a new target is found
+	/// </summary>
 	event MouseTargetCallback onTargetLeave;
 
-	// adds callbacks to onTargetEnter
+	/// <summary>
+	/// adds callbacks to onTargetEnter
+	/// </summary>
 	public static event MouseTargetCallback OnTargetLeave { add { instance.onTargetLeave += value; } remove { instance.onTargetLeave -= value; } }
 
 
@@ -114,6 +147,7 @@ public class MouseBehaviour : MonoBehaviour {
 			}
 		}
 	}
+
 
 	void Update() {
 
