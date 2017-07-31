@@ -4,6 +4,9 @@ using System.Collections;
 
 public delegate void MouseTargetCallback (GameObject gameObject);
 
+public delegate void MouseClickCallback (bool double)
+
+
 
 public class InputManager : MonoBehaviour {
 
@@ -96,11 +99,18 @@ public class InputManager : MonoBehaviour {
 	public static event MouseTargetCallback OnTargetLeave { add { instance.onTargetLeave += value; } remove { instance.onTargetLeave -= value; } }
 
 
+	/// <summary>
+	///
+	/// </summary>
+	event MouseClickCallback onCLick;
+
+	/// <summary>
+	///
+	/// </summary>
+	public static event MouseClickCallback OnCLick { add {instance.onCLick += value; } remove {instance.onCLick -= value; } }
+
+
 	/* <--- call messages --->
-
-	onCLick
-	onDoubleClick
-
 	onHoldStart
 	onHold
 	onHoldEnd
@@ -135,7 +145,6 @@ public class InputManager : MonoBehaviour {
 			if (hit == null) {
 
 				// leave current target
-				currentTarget.SendMessageUpwards ("OnMouseLeave");
 				if (onTargetLeave != null) { onTargetLeave (currentTarget); }
 
 				// set new target
@@ -153,22 +162,22 @@ public class InputManager : MonoBehaviour {
 				if (currentTarget != null) {
 
 					// leave current target
-					currentTarget.SendMessageUpwards ("OnMouseLeave");
 					if (onTargetLeave != null) { onTargetLeave (currentTarget); }
 
 					// set new target
 					lastTarget = currentTarget;
 
 					// enter new target
-					currentTarget.SendMessageUpwards ("OnMouseEnter");
 					if (onTargetEnter != null) { onTargetEnter (currentTarget); }
 				}
 
 				// enter from null
 				else {
 
+					// there was no last target
 					lastTarget = null;
-					currentTarget.SendMessageUpwards ("OnMouseEnter");
+
+					// enter new target
 					if (onTargetEnter != null) { onTargetEnter (currentTarget); }
 				}
 			}
@@ -232,14 +241,9 @@ public class InputManager : MonoBehaviour {
 			// Call event end
 			if (!currentEvent.hold && !currentEvent.drag) {
 
-				if (currentEvent.doubleClick) {
-
-					// <--- end double click --->
-				}
-				else {
-
-					// <--- end click --->
-				}
+				// call on click callback,
+				// param is true if double click
+				if (onCLick != null) { onClick(currentEvent.doubleClick); }
 			}
 			else {
 
