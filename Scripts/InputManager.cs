@@ -9,7 +9,7 @@ public class InputManager : MonoBehaviour {
 
 
 	class InputEvent {
-		
+
 		public KeyCode key;
 		public float startTime;
 		public float endTime;
@@ -19,9 +19,10 @@ public class InputManager : MonoBehaviour {
 		public bool doubleClick;
 		public bool hold;
 		public bool drag;
+		public Vector2 startPoint;
 
 		public InputEvent (KeyCode key, bool shift = false, bool alt = false, bool control = false, bool doubleClick = false) {
-			
+
 			this.key = key;
 			this.startTime = Time.time;
 			this.endTime = -1;
@@ -104,7 +105,7 @@ public class InputManager : MonoBehaviour {
 		if (instance == null) { instance = this; }
 		else { Debug.LogError ("Only 1 instance of MouseBehaviour can exist per scene!"); }
 	}
-		
+
 
 	/// <summary>
 	/// Updates the current target (if different).
@@ -132,7 +133,7 @@ public class InputManager : MonoBehaviour {
 
 			// if a valid object was hit with raycast
 			else {
-				
+
 				// enter from last
 				if (currentTarget != null) {
 
@@ -173,7 +174,7 @@ public class InputManager : MonoBehaviour {
 				KeyCode code = (KeyCode)((int)KeyCode.Mouse0 + i);
 
 				// create an event
-				currentEvent = 
+				currentEvent =
 					new InputEvent (
 						code,
 						Input.GetKeyDown (KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift),
@@ -213,7 +214,7 @@ public class InputManager : MonoBehaviour {
 		RaycastHit hit;
 
 		// see if the mouse if hovering over a valid object within max distance
-		if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit, maxDistance, targetMask)) { 
+		if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit, maxDistance, targetMask)) {
 
 			// update target with object
 			UpdateTarget (hit.collider.gameObject);
@@ -225,7 +226,7 @@ public class InputManager : MonoBehaviour {
 			// update target with null
 			UpdateTarget (null);
 		}
-			
+
 		// if there is no current event
 		if (currentEvent == null) {
 
@@ -238,11 +239,31 @@ public class InputManager : MonoBehaviour {
 
 		// if there is a current event
 		else {
-			
+
 			// check for event end
-			CheckForEventEnd();
+			if (!CheckForEventEnd()) {
+
+				// if there 'hold' is false but the key has been held longer than threshold
+				if (!currentEvent.hold && Time.time - currentEvent.startTime > 0.2f) {
+
+					// hold is not true
+					currentEvent.hold = true;
+
+					// <--- begin hold --->
+				}
+
+				// if there 'drag' is false but the cursor has moved more than the threshold
+				if (!currentEvent.drag && Vector2.Distance (currentEvent.startPoint, Input.MousePosition) > 2f) {
+
+					// drag is not true
+					currentEvent.drag = true;
+
+					// <--- begin drag --->
+				}
+
+
+			}
 		}
 
 	}
 }
-
