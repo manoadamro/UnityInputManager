@@ -96,6 +96,21 @@ public class InputManager : MonoBehaviour {
 	public static event MouseTargetCallback OnTargetLeave { add { instance.onTargetLeave += value; } remove { instance.onTargetLeave -= value; } }
 
 
+	/* <--- call messages --->
+
+	onCLick
+	onDoubleClick
+
+	onHoldStart
+	onHold
+	onHoldEnd
+
+	onDragStart
+	onDrag
+	onDragEnd
+	*/
+
+
 	/// <summary>
 	/// Called by unity when script is loaded
 	/// </summary>
@@ -190,19 +205,68 @@ public class InputManager : MonoBehaviour {
 				return true;
 			}
 		}
+
+		// no events
 		return false;
 	}
 
 
+	/// <summary>
+	///
+	/// </summary>
 	void CheckWatchKeys() {
 
 		// To Do
+
 	}
 
 
-	void CheckForEventEnd() {
+	/// <summary>
+	///
+	/// </summary>
+	bool CheckForEventEnd() {
 
-		// To Do
+		if (Input.GetKeyUp(currentEvent.key)) {
+
+
+			// Call event end
+			if (!currentEvent.hold && !currentEvent.drag) {
+
+				if (currentEvent.doubleClick) {
+
+					// <--- end double click --->
+				}
+				else {
+
+					// <--- end click --->
+				}
+			}
+			else {
+
+				if (currentEvent.hold) {
+
+					// <--- end hold --->
+				}
+
+				// this could just be else, but... 'else if' is pretty
+				else if (currentEvent.drag) {
+
+					// <--- end drag --->
+				}
+			}
+
+			// set last event
+			lastEvent = currentEvent;
+
+			// clear current event
+			currentEvent = null;
+
+			// event was ended
+			return true;
+		}
+
+		// event was not ended
+		return false;
 	}
 
 	/// <summary>
@@ -261,9 +325,19 @@ public class InputManager : MonoBehaviour {
 					// <--- begin drag --->
 				}
 
+			}
+			else {
 
+				if (currentEvent.hold) {
+
+					// <--- hold stay --->
+				}
+
+				if (currentEvent.drag) {
+
+					// <--- drag stay --->
+				}
 			}
 		}
-
 	}
 }
